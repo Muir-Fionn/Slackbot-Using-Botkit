@@ -1,5 +1,6 @@
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This is a simpe Slack bot built with Botkit.
+This is a simple Slack bot built with Botkit.  
+Expanded from the slack_bot.js example from the Botkit repository.
 
 This bot helps to manage grocery list items for Slack users:
 

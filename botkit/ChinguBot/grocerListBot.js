@@ -248,7 +248,7 @@ function formatUptime(uptime) {
 }
 //add items to list
 controller.hears(['add (.*)', 'include (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
-    var item = message.match[1];
+    var item = message.match[1].split(', ');
     controller.storage.users.get(message.user, function(err, user) {
         if (!user) {
             user = {
@@ -256,9 +256,11 @@ controller.hears(['add (.*)', 'include (.*)'], 'direct_message,direct_mention,me
             };
         }
         if(!user.list){
-          user.list = [item];
+          user.list = item;
         }else {
-          user.list.push(item);
+          item.forEach(function(el) {
+            user.list.push(el);
+          })
         }
         controller.storage.users.save(user, function(err, id) {
             bot.reply(message, 'Got it. I have added ' + item + ' to your list.\nYour list is: ' + user.list.join(', ') + '.');
@@ -278,16 +280,17 @@ controller.hears(['remove (.*)', 'erase (.*)'], 'direct_message,direct_mention,m
         if(!user.list){
           controller.storage.users.save(user, function(err, id) {
               bot.reply(message, 'There are no items to remove. Your list is empty.');
+            });
         }else {
-          for(var i = 0, n = list.length, i < n; i++)
+          for(var i = 0; i < user.list.length; i++)
           {
-            if(item == list[i]){
+            if(item == user.list[i]){
               user.list.splice(i, 1);
             }
           }
-        }
-        controller.storage.users.save(user, function(err, id) {
+          controller.storage.users.save(user, function(err, id) {
             bot.reply(message, 'Got it. I have removed ' + item + ' from your list.\nYour list is: ' + user.list.join(', ') + '.');
-        });
+          });
+        }
     });
 });

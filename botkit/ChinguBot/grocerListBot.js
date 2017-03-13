@@ -263,7 +263,7 @@ controller.hears(['add (.*)', 'include (.*)'], 'direct_message,direct_mention,me
           })
         }
         controller.storage.users.save(user, function(err, id) {
-            bot.reply(message, 'Got it. I have added ' + item + ' to your list.\nYour list is: ' + user.list.join(', ') + '.');
+            bot.reply(message, 'Got it. I have added ' + item.join(', ') + ' to your list.\nYour list is: ' + user.list.join(', ') + '.');
         });
     });
 });
@@ -292,5 +292,22 @@ controller.hears(['remove (.*)', 'erase (.*)'], 'direct_message,direct_mention,m
             bot.reply(message, 'Got it. I have removed ' + item + ' from your list.\nYour list is: ' + user.list.join(', ') + '.');
           });
         }
+    });
+});
+
+//clear all items from list
+controller.hears(['empty list', 'remove list', 'delete list'], 'direct_message,direct_mention,mention', function(bot, message) {
+    controller.storage.users.get(message.user, function(err, user) {
+        if (!user) {
+            user = {
+                id: message.user,
+            };
+        }
+
+        user.list = [];
+
+        controller.storage.users.save(user, function(err, id) {
+          bot.reply(message, 'Got it. Your list is' + (user.list.length > 0 ? ': ' + user.list.join(', ') : ' empty') + '.');
+        });
     });
 });

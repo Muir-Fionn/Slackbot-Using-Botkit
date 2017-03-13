@@ -1,5 +1,5 @@
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This is a simple Slack bot built with Botkit.  
+This is a simple Slack bot built with Botkit.
 Expanded from the slack_bot.js example from the Botkit repository.
 
 This bot helps to manage grocery list items for Slack users:
@@ -18,7 +18,7 @@ This bot helps to manage grocery list items for Slack users:
 
   Run your bot from the command line:
 
-    token=<MY TOKEN> node slack_bot.js
+    token=<MY TOKEN> node grocerListBot.js
 
 # USE THE BOT:
 
@@ -236,3 +236,22 @@ function formatUptime(uptime) {
     uptime = uptime + ' ' + unit;
     return uptime;
 }
+
+controller.hears(['add (.*)', 'include (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
+    var item = message.match[1];
+    controller.storage.users.get(message.user, function(err, user) {
+        if (!user) {
+            user = {
+                id: message.user,
+            };
+        }
+        if(!user.list){
+          user.list = [item];
+        }else {
+          user.list.push(item);
+        }
+        controller.storage.users.save(user, function(err, id) {
+            bot.reply(message, 'Got it. I have added ' + item + ' to your list.\nYour list is: ' + user.list.join(', ') + '.');
+        });
+    });
+});

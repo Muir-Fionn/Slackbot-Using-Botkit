@@ -265,6 +265,7 @@ controller.hears(['add (.*)', 'include (.*)'], 'direct_message,direct_mention,me
         });
     });
 });
+
 //remove items from list
 controller.hears(['remove (.*)', 'erase (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
     var item = message.match[1];

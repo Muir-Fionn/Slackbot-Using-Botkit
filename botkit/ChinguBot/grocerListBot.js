@@ -44,6 +44,16 @@ This bot helps to manage grocery list items for Slack users:
 
   The bot will ask if you are sure, and then shut itself down.
 
+# USE THE LIST:
+
+  Say: "add <item>"
+
+  The bot will add the item to your list and give you back your updated list.
+
+  Say: "remove <item>"
+
+  The bot will remove the item from your list.
+
   Make sure to invite your bot into other channels using /invite @<my bot>!
 
 # EXTEND THE BOT:

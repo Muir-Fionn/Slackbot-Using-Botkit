@@ -250,6 +250,7 @@ function formatUptime(uptime) {
 controller.hears(['add (.*)', 'include (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
     var item = message.match[1].split(', ');
     controller.storage.users.get(message.user, function(err, user) {
+      var repeats = [];
         if (!user) {
             user = {
                 id: message.user,
@@ -258,12 +259,22 @@ controller.hears(['add (.*)', 'include (.*)'], 'direct_message,direct_mention,me
         if(!user.list){
           user.list = item;
         }else {
-          item.forEach(function(el) {
-            user.list.push(el);
+          var itemsAdded = [];
+          item.forEach(function(el, i) {
+            //Check if item is already on the list
+            if(user.list.indexOf(el) < 0){
+              user.list.push(el);
+              itemsAdded.push(el);
+            }else {
+              repeats.push(el)
+            }
           })
+          item = itemsAdded;
         }
+        var itemsString = item.length > 0 ? 'I have added ' + item.join(', ') + ' to your list.' : ''
+        var repeatString = repeats.length > 0 ? 'Your list already includes: ' + repeats.join(', ') + '.' : '';
         controller.storage.users.save(user, function(err, id) {
-            bot.reply(message, 'Got it. I have added ' + item.join(', ') + ' to your list.\nYour list is: ' + user.list.join(', ') + '.');
+            bot.reply(message, 'Got it. ' + itemsString + repeatString + '\nYour list is: ' + user.list.join(', ') + '.');
         });
     });
 });
@@ -309,5 +320,26 @@ controller.hears(['empty list', 'remove list', 'delete list'], 'direct_message,d
         controller.storage.users.save(user, function(err, id) {
           bot.reply(message, 'Got it. Your list is' + (user.list.length > 0 ? ': ' + user.list.join(', ') : ' empty') + '.');
         });
+    });
+});
+
+//print list
+controller.hears(['print list', 'my list'], 'direct_message,direct_mention,mention', function(bot, message) {
+    controller.storage.users.get(message.user, function(err, user) {
+        if (!user) {
+            user = {
+                id: message.user,
+            };
+        }
+
+        if(!user.list || user.list.lengh > 0){
+          controller.storage.users.save(user, function(err, id) {
+              bot.reply(message, 'There are no items to remove. Your list is empty.');
+            });
+        }else {
+          controller.storage.users.save(user, function(err, id) {
+            bot.reply(message, 'Your list is: ' + user.list.join(', ')  + '.');
+          });
+        }
     });
 });

@@ -189,7 +189,7 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
 });
 
 
-controller.hears(['shutdown'], 'direct_message,direct_mention,mention', function(bot, message) {
+controller.hears(['shutdown', 'shut down'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     bot.startConversation(message, function(err, convo) {
 
@@ -293,16 +293,22 @@ controller.hears(['remove (.*)', 'erase (.*)'], 'direct_message,direct_mention,m
               bot.reply(message, 'There are no items to remove. Your list is empty.');
             });
         }else {
-          for(var i = 0; i < user.list.length; i++)
-          {
-            if(item == user.list[i]){
-              user.list.splice(i, 1);
+
+          var index = user.list.indexOf(item)
+          if(index >= 0){
+            user.list.splice(index,1);
+            bot.reply(message, 'Ok. I have removed ' + item + ' from your list.\n');
+            }
+            else{
+              bot.reply(message, item + ' is not on your list.');
             }
           }
+
+          var listString = 'Your list is' + (user.list.length > 0 ? ': ' + user.list.join(', ') : ' empty') + '.';
           controller.storage.users.save(user, function(err, id) {
-            bot.reply(message, 'Got it. I have removed ' + item + ' from your list.\nYour list is: ' + user.list.join(', ') + '.');
-          });
-        }
+            bot.reply(message, listString); //'Got it. I have removed ' + item + ' from your list.\n' +
+            });
+
     });
 });
 

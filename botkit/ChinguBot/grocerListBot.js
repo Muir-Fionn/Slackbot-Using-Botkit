@@ -294,26 +294,27 @@ controller.hears(['remove (.*)', 'erase (.*)'], 'direct_message,direct_mention,m
             });
         }else {
 
-          var index = user.list.indexOf(item)
+          var index = user.list.indexOf(item);
+          var removalString;
           if(index >= 0){
             user.list.splice(index,1);
-            bot.reply(message, 'Ok. I have removed ' + item + ' from your list.\n');
+            removalString = 'Ok. I have removed ' + item + ' from your list.\n';
             }
             else{
-              bot.reply(message, item + ' is not on your list.');
+              removalString = item[0].toUpperCase() + item.slice(1) + ' is not on your list.\n';
             }
-          }
 
-          var listString = 'Your list is' + (user.list.length > 0 ? ': ' + user.list.join(', ') : ' empty') + '.';
-          controller.storage.users.save(user, function(err, id) {
-            bot.reply(message, listString); //'Got it. I have removed ' + item + ' from your list.\n' +
+            var listString = 'Your list is' + (user.list.length > 0 ? ': ' + user.list.join(', ') : ' empty') + '.';
+            controller.storage.users.save(user, function(err, id) {
+              bot.reply(message, removalString + listString); //'Got it. I have removed ' + item + ' from your list.\n' +
             });
+          }
 
     });
 });
 
 //clear all items from list
-controller.hears(['empty list', 'remove list', 'delete list'], 'direct_message,direct_mention,mention', function(bot, message) {
+controller.hears(['empty list', 'remove list', 'delete list', 'clear list'], 'direct_message,direct_mention,mention', function(bot, message) {
     controller.storage.users.get(message.user, function(err, user) {
         if (!user) {
             user = {
